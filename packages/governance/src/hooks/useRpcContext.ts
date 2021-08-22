@@ -13,7 +13,9 @@ export function useRpcContext() {
   const programId = useMemo(() => {
     const params = new URLSearchParams(location.search);
     return (
-      params.get('programId') ?? 'GqTPL6qRf5aUuqscLh8Rg2HTxPUXfhhAXDptTLhp1t2J'
+      params.get('programId') ??
+      process.env.REACT_APP_GOVERNANCE_PROGRAM_ID ??
+      'GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw'
     );
   }, [location]);
 
