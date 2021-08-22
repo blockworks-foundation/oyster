@@ -1,7 +1,6 @@
 import { sleep, useLocalStorageState } from '../utils/utils';
 import {
   Account,
-  BlockhashAndFeeCalculator,
   clusterApiUrl,
   Commitment,
   Connection,
@@ -26,6 +25,12 @@ import {
   SignTransactionError,
   TransactionTimeoutError,
 } from '../utils/errors';
+import { FeeCalculator } from '@solana/web3.js';
+
+export type BlockhashAndFeeCalculator = {
+  blockhash: string;
+  feeCalculator: FeeCalculator;
+};
 
 export type ENV = 'mainnet-beta' | 'testnet' | 'devnet' | 'localnet';
 
@@ -90,12 +95,14 @@ export function ConnectionProvider({ children = undefined as any }) {
     DEFAULT_SLIPPAGE.toString(),
   );
 
-  const connection = useMemo(() => new Connection(endpoint, 'recent'), [
-    endpoint,
-  ]);
-  const sendConnection = useMemo(() => new Connection(endpoint, 'recent'), [
-    endpoint,
-  ]);
+  const connection = useMemo(
+    () => new Connection(endpoint, 'recent'),
+    [endpoint],
+  );
+  const sendConnection = useMemo(
+    () => new Connection(endpoint, 'recent'),
+    [endpoint],
+  );
 
   const env =
     ENDPOINTS.find(end => end.endpoint === endpoint)?.name || ENDPOINTS[0].name;
@@ -386,7 +393,7 @@ export const sendTransaction = async (
         console.error('getErrorForTransaction() error', ex);
       }
 
-      if ('timeout' in confirmationStatus.err) {
+      if ((confirmationStatus.err as any)['timeout']) {
         notify({
           message: `Transaction hasn't been confirmed within ${
             DEFAULT_TIMEOUT / 1000
