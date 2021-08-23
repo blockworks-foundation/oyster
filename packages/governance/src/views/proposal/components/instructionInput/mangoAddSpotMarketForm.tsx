@@ -84,7 +84,7 @@ export const MangoAddSpotMarketForm = ({
     );
 
     if (!marketInfo.quoteMintAddress.equals(quoteMint.mintKey)) {
-      throw 'invalid market';
+      throw new Error('invalid market');
     }
 
     const tx = new Transaction();
