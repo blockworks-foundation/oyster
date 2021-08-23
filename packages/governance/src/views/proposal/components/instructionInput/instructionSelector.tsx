@@ -10,6 +10,8 @@ export enum InstructionType {
   SplTokenSaleTransfer,
   SplTokenMintTo,
   GovernanceSetRealmConfig,
+  MangoAddOracle,
+  MangoAddSpotMarket,
 }
 
 const instructionNames = [
@@ -21,6 +23,8 @@ const instructionNames = [
   'spl-token sale-transfer',
   'spl-token mint-to',
   'set-realm-config',
+  'mango add oracle',
+  'mango add spot-market',
 ];
 
 export function InstructionSelector({
