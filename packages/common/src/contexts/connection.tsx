@@ -47,7 +47,7 @@ export const ENDPOINTS = [
   },
   {
     name: 'devnet' as ENV,
-    endpoint:  process.env.DEVNET_RPC_URL ?? clusterApiUrl('devnet'),
+    endpoint:  process.env.REACT_APP_DEVNET_RPC_URL ?? clusterApiUrl('devnet'),
     ChainId: ChainId.Devnet,
   },
   {
