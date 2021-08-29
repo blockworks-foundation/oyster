@@ -9,7 +9,10 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { withdrawGoverningTokens } from '../../../actions/withdrawGoverningTokens';
 
 import { PublicKey } from '@solana/web3.js';
-import { useWalletTokenOwnerRecord } from '../../../hooks/apiHooks';
+import {
+  useVoteRecordsByTokenOwner,
+  useWalletTokenOwnerRecord,
+} from '../../../hooks/apiHooks';
 import { useRpcContext } from '../../../hooks/useRpcContext';
 
 const { useAccountByMint } = hooks;
@@ -30,6 +33,7 @@ export function WithdrawGoverningTokensButton({
     realm?.pubkey,
     governingTokenMint,
   );
+  const voteRecords = useVoteRecordsByTokenOwner(tokenOwnerRecord?.pubkey);
 
   if (!tokenOwnerRecord || !governingTokenMint) {
     return null;
@@ -44,6 +48,7 @@ export function WithdrawGoverningTokensButton({
       type="ghost"
       onClick={() => {
         if (tokenOwnerRecord.info.unrelinquishedVotesCount > 0) {
+          console.log(voteRecords);
           error({
             title: "Can't withdraw tokens",
             content: `You have tokens staked in ${tokenOwnerRecord.info.unrelinquishedVotesCount} proposal(s). Please release your tokens from the proposals before withdrawing the tokens from the realm.`,
