@@ -10,6 +10,7 @@ import {
   PerpEventQueueHeaderLayout,
   PerpMarketLayout,
 } from '@blockworks-foundation/mango-client';
+import * as common from '@project-serum/common';
 import {
   ExplorerLink,
   ParsedAccount,
@@ -43,7 +44,6 @@ export const MangoAddPerpMarketForm = ({
 
   const onCreate = async ({
     mangoGroupId,
-    marketId,
     marketIndex,
     maintLeverage,
     initLeverage,
@@ -59,7 +59,6 @@ export const MangoAddPerpMarketForm = ({
     mngoPerPeriod,
   }: {
     mangoGroupId: string;
-    marketId: string;
     marketIndex: number;
     maintLeverage: number;
     initLeverage: number;
@@ -83,11 +82,26 @@ export const MangoAddPerpMarketForm = ({
       groupConfig.mangoProgramId,
     ).getMangoGroup(groupConfig.publicKey);
 
+    const mngoToken = groupConfig.tokens.filter(token => {
+      return token.symbol === 'MNGO';
+    })[0];
+
+    const provider = new common.Provider(
+      connection,
+      { ...wallet!, publicKey: wallet!.publicKey! },
+      common.Provider.defaultOptions(),
+    );
+
     const tx = new Transaction();
+    const addToTx = async (instructions: Promise<TransactionInstruction[]>) => {
+      for (let ins of await instructions) {
+        tx.add(ins);
+      }
+    };
 
     const makePerpMarketAccountInstruction = await createAccountInstruction(
       connection,
-      governance.pubkey,
+      provider.wallet.publicKey,
       PerpMarketLayout.span,
       groupConfig.mangoProgramId,
     );
@@ -95,7 +109,7 @@ export const MangoAddPerpMarketForm = ({
 
     const makeEventQueueAccountInstruction = await createAccountInstruction(
       connection,
-      governance.pubkey,
+      provider.wallet.publicKey,
       PerpEventQueueHeaderLayout.span + maxNumEvents * PerpEventLayout.span,
       groupConfig.mangoProgramId,
     );
@@ -103,7 +117,7 @@ export const MangoAddPerpMarketForm = ({
 
     const makeBidAccountInstruction = await createAccountInstruction(
       connection,
-      governance.pubkey,
+      provider.wallet.publicKey,
       BookSideLayout.span,
       groupConfig.mangoProgramId,
     );
@@ -111,26 +125,21 @@ export const MangoAddPerpMarketForm = ({
 
     const makeAskAccountInstruction = await createAccountInstruction(
       connection,
-      governance.pubkey,
+      provider.wallet.publicKey,
       BookSideLayout.span,
       groupConfig.mangoProgramId,
     );
     tx.add(makeAskAccountInstruction.instruction);
 
     const mngoVaultAccount = new Account();
-    const mngoToken = groupConfig.tokens.filter(token => {
-      return token.symbol === 'MNGO';
-    })[0];
-    const mngoVaultAccountInstructions = await createTokenAccountInstructions(
-      connection,
-      governance.pubkey,
-      mngoVaultAccount.publicKey,
-      new PublicKey(mngoToken.mintKey),
-      mangoGroup.signerKey,
+    await addToTx(
+      common.createTokenAccountInstrs(
+        provider,
+        mngoVaultAccount.publicKey,
+        new PublicKey(mngoToken.mintKey),
+        mangoGroup.signerKey,
+      ),
     );
-    for (let ins of await mngoVaultAccountInstructions) {
-      tx.add(ins);
-    }
 
     tx.recentBlockhash = (await connection.getRecentBlockhash('max')).blockhash;
 
@@ -139,6 +148,7 @@ export const MangoAddPerpMarketForm = ({
       makeEventQueueAccountInstruction.account,
       makeBidAccountInstruction.account,
       makeAskAccountInstruction.account,
+      mngoVaultAccount,
     ];
     tx.setSigners(wallet!.publicKey!, ...signers.map(s => s.publicKey));
     if (signers.length > 0) {
@@ -190,12 +200,6 @@ export const MangoAddPerpMarketForm = ({
         required
       ></AccountFormItem>
 
-      <AccountFormItem
-        name="marketId"
-        label="perp market"
-        required
-      ></AccountFormItem>
-
       <Form.Item name="marketIndex" label="market index" required>
         <Input type="number" />
       </Form.Item>
@@ -238,7 +242,7 @@ export const MangoAddPerpMarketForm = ({
       <Form.Item
         name="baseLotSize"
         label="base lot size"
-        initialValue={0.05}
+        initialValue={5}
         required
       >
         <Input type="number" />
@@ -247,7 +251,7 @@ export const MangoAddPerpMarketForm = ({
       <Form.Item
         name="quoteLotSize"
         label="quote lot size"
-        initialValue={0.05}
+        initialValue={5}
         required
       >
         <Input type="number" />
