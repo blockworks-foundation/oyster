@@ -294,8 +294,8 @@ export const MangoAddPerpMarketForm = ({
 
       <Form.Item
         name="mngoPerPeriod"
-        label="mngo per period"
-        initialValue={11400}
+        label="MNGO per period"
+        initialValue={0}
         required
       >
         <Input type="number" />
