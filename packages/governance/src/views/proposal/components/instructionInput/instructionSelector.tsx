@@ -12,6 +12,7 @@ export enum InstructionType {
   GovernanceSetRealmConfig,
   MangoAddOracle,
   MangoAddSpotMarket,
+  MangoAddPerpMarket
 }
 
 const instructionNames = [
@@ -25,6 +26,7 @@ const instructionNames = [
   'set-realm-config',
   'mango add oracle',
   'mango add spot-market',
+  'mango add perp-market',
 ];
 
 export function InstructionSelector({
