@@ -2,7 +2,6 @@ import {
   BookSideLayout,
   Config,
   createAccountInstruction,
-  createTokenAccountInstructions,
   I80F48,
   makeAddPerpMarketInstruction,
   MangoClient,
@@ -10,13 +9,13 @@ import {
   PerpEventQueueHeaderLayout,
   PerpMarketLayout,
 } from '@blockworks-foundation/mango-client';
-import * as common from '@project-serum/common';
 import {
   ExplorerLink,
   ParsedAccount,
   useConnection,
   useWallet,
 } from '@oyster/common';
+import * as common from '@project-serum/common';
 import {
   Account,
   PublicKey,
@@ -207,7 +206,7 @@ export const MangoAddPerpMarketForm = ({
       <Form.Item
         name="maintLeverage"
         label="maintenance position leverage"
-        initialValue={10}
+        initialValue={20}
         required
       >
         <Input type="number" />
@@ -216,7 +215,7 @@ export const MangoAddPerpMarketForm = ({
       <Form.Item
         name="initLeverage"
         label="initial position leverage"
-        initialValue={5}
+        initialValue={10}
         required
       >
         <Input type="number" />
@@ -225,24 +224,29 @@ export const MangoAddPerpMarketForm = ({
       <Form.Item
         name="liquidationFee"
         label="liquidation fee"
-        initialValue={0.05}
+        initialValue={0.025}
         required
       >
         <Input type="number" />
       </Form.Item>
 
-      <Form.Item name="makerFee" label="maker fee" initialValue={0.05} required>
+      <Form.Item name="makerFee" label="maker fee" initialValue={0.0} required>
         <Input type="number" />
       </Form.Item>
 
-      <Form.Item name="takerFee" label="taker fee" initialValue={0.05} required>
+      <Form.Item
+        name="takerFee"
+        label="taker fee"
+        initialValue={0.0005}
+        required
+      >
         <Input type="number" />
       </Form.Item>
 
       <Form.Item
         name="baseLotSize"
         label="base lot size"
-        initialValue={5}
+        initialValue={100}
         required
       >
         <Input type="number" />
@@ -251,20 +255,7 @@ export const MangoAddPerpMarketForm = ({
       <Form.Item
         name="quoteLotSize"
         label="quote lot size"
-        initialValue={5}
-        required
-      >
-        <Input type="number" />
-      </Form.Item>
-
-      <Form.Item name="rate" label="rate" initialValue={0.05} required>
-        <Input type="number" />
-      </Form.Item>
-
-      <Form.Item
-        name="maxDepthBps"
-        label="max depth bps"
-        initialValue={0.05}
+        initialValue={10}
         required
       >
         <Input type="number" />
@@ -273,7 +264,20 @@ export const MangoAddPerpMarketForm = ({
       <Form.Item
         name="maxNumEvents"
         label="max number of events"
-        initialValue={1}
+        initialValue={256}
+        required
+      >
+        <Input type="number" />
+      </Form.Item>
+
+      <Form.Item name="rate" label="rate" initialValue={1} required>
+        <Input type="number" />
+      </Form.Item>
+
+      <Form.Item
+        name="maxDepthBps"
+        label="max depth bps"
+        initialValue={200}
         required
       >
         <Input type="number" />
@@ -291,7 +295,7 @@ export const MangoAddPerpMarketForm = ({
       <Form.Item
         name="mngoPerPeriod"
         label="mngo per period"
-        initialValue={1000}
+        initialValue={11400}
         required
       >
         <Input type="number" />
