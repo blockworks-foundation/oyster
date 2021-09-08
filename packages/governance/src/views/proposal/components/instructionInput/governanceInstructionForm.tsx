@@ -21,8 +21,11 @@ export function getGovernanceInstructions(
   }
 
   if (
-    governance.info.governedAccount.toBase58() ===
-    '5fP7Z7a87ZEVsKr2tQPApdtq83GcTW4kz919R6ou5h5E'
+    [
+      '5fP7Z7a87ZEVsKr2tQPApdtq83GcTW4kz919R6ou5h5E',
+      '4skJ85cdxQAFVKbcGgfun8iZPL7BadVYXG3kGEGkufqA',
+      'mv3ekLzLbnVPNxjSKvqBpU3ZeZXPQdEC3bp5MDEBG68',
+    ].includes(governance.info.governedAccount.toBase58())
   ) {
     instructions.push(InstructionType.MangoAddOracle);
     instructions.push(InstructionType.MangoAddSpotMarket);
