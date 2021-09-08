@@ -77,6 +77,8 @@
     "@types/bn.js": "^5.1.0",
     "@project-serum/serum": "0.13.57",
     "@solana/spl-token": "0.1.8",
-    "@solana/web3.js": "1.24.1"
+    "@solana/web3.js": "1.24.1",
+    "tweetnacl": "1.0.3",
+    "@toruslabs/tweetnacl-js": "1.0.3"
   }
 }
