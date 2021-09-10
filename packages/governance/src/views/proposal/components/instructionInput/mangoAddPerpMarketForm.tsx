@@ -43,7 +43,7 @@ export const MangoAddPerpMarketForm = ({
 
   const onCreate = async ({
     mangoGroupId,
-    marketIndex,
+    oracleId,
     maintLeverage,
     initLeverage,
     liquidationFee,
@@ -58,7 +58,7 @@ export const MangoAddPerpMarketForm = ({
     mngoPerPeriod,
   }: {
     mangoGroupId: string;
-    marketIndex: number;
+    oracleId: string;
     maintLeverage: number;
     initLeverage: number;
     liquidationFee: number;
@@ -161,13 +161,13 @@ export const MangoAddPerpMarketForm = ({
     const instruction = await makeAddPerpMarketInstruction(
       groupConfig.mangoProgramId,
       mangoGroup.publicKey,
+      new PublicKey(oracleId),
       makePerpMarketAccountInstruction.account.publicKey,
       makeEventQueueAccountInstruction.account.publicKey,
       makeBidAccountInstruction.account.publicKey,
       makeAskAccountInstruction.account.publicKey,
       mngoVaultAccount.publicKey,
       governance.pubkey,
-      new BN(marketIndex),
       I80F48.fromNumber(maintLeverage),
       I80F48.fromNumber(initLeverage),
       I80F48.fromNumber(liquidationFee),
@@ -199,9 +199,11 @@ export const MangoAddPerpMarketForm = ({
         required
       ></AccountFormItem>
 
-      <Form.Item name="marketIndex" label="market index" required>
-        <Input type="number" />
-      </Form.Item>
+      <AccountFormItem
+        name="oracleId"
+        label="oracle account"
+        required
+      ></AccountFormItem>
 
       <Form.Item
         name="maintLeverage"

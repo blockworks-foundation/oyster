@@ -1255,10 +1255,10 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
-"@blockworks-foundation/mango-client@^3.0.15":
-  version "3.0.16"
-  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-3.0.16.tgz#9209afb011be1e69c3bcb05be7451863ae307ebc"
-  integrity sha512-ibE9dBNlzEPl/xYZA9QM7vfiFtlbSjY3Q7h1kD56dbj/FhcU1ufjjuKgW/K+lzwSPNG9H4SgjjOQ9JZrcz1OJw==
+"@blockworks-foundation/mango-client@^3.0.17":
+  version "3.0.17"
+  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-3.0.17.tgz#44973f1e65938734a484ce5b982444985bbeaf3a"
+  integrity sha512-p8KdB5Hx54J12aKLlYBcHhdpTh/vYRh0fmHl2RbmOZgnSMmpUiUTKh5DMoYcjND6DiDGMZbosb7i7CS24FSbZg==
   dependencies:
     "@project-serum/serum" "0.13.55"
     "@project-serum/sol-wallet-adapter" "^0.2.0"

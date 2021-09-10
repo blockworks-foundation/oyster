@@ -25,7 +25,6 @@ import {
   NodeBankLayout,
   RootBankLayout,
 } from '@blockworks-foundation/mango-client';
-import BN from 'bn.js';
 
 export const MangoAddSpotMarketForm = ({
   form,
@@ -41,8 +40,8 @@ export const MangoAddSpotMarketForm = ({
 
   const onCreate = async ({
     mangoGroupId,
+    oracleId,
     marketId,
-    marketIndex,
     maintLeverage,
     initLeverage,
     liquidationFee,
@@ -51,8 +50,8 @@ export const MangoAddSpotMarketForm = ({
     maxRate,
   }: {
     mangoGroupId: string;
+    oracleId: string;
     marketId: string;
-    marketIndex: number;
     maintLeverage: number;
     initLeverage: number;
     liquidationFee: number;
@@ -75,6 +74,7 @@ export const MangoAddSpotMarketForm = ({
       { ...wallet!, publicKey: wallet!.publicKey! },
       common.Provider.defaultOptions(),
     );
+    const oracle = new PublicKey(oracleId);
     const market = new PublicKey(marketId);
     const marketInfo = await serum.Market.load(
       connection,
@@ -135,6 +135,7 @@ export const MangoAddSpotMarketForm = ({
     const instruction = makeAddSpotMarketInstruction(
       groupConfig.mangoProgramId,
       mangoGroup.publicKey,
+      oracle,
       market,
       mangoGroup.dexProgramId,
       marketInfo.baseMintAddress,
@@ -142,7 +143,6 @@ export const MangoAddSpotMarketForm = ({
       baseVault.publicKey,
       rootBank.account.publicKey,
       governance.pubkey,
-      new BN(marketIndex),
       I80F48.fromNumber(maintLeverage),
       I80F48.fromNumber(initLeverage),
       I80F48.fromNumber(liquidationFee),
@@ -170,14 +170,17 @@ export const MangoAddSpotMarketForm = ({
       ></AccountFormItem>
 
       <AccountFormItem
+        name="oracleId"
+        label="oracle account"
+        required
+      ></AccountFormItem>
+
+      <AccountFormItem
         name="marketId"
         label="spot market"
         required
       ></AccountFormItem>
 
-      <Form.Item name="marketIndex" label="market index" required>
-        <Input type="number" />
-      </Form.Item>
       <Form.Item
         name="maintLeverage"
         label="maintenance position leverage"
