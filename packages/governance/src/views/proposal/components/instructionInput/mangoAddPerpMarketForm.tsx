@@ -178,7 +178,7 @@ export const MangoAddPerpMarketForm = ({
       I80F48.fromNumber(rate),
       I80F48.fromNumber(maxDepthBps),
       new BN(targetPeriodLength),
-      new BN(mngoPerPeriod),
+      new BN(mngoPerPeriod * Math.pow(10, mngoToken.decimals)),
     );
 
     onCreateInstruction(instruction);
@@ -272,7 +272,12 @@ export const MangoAddPerpMarketForm = ({
         <Input type="number" />
       </Form.Item>
 
-      <Form.Item name="rate" label="rate" initialValue={1} required>
+      <Form.Item
+        name="rate"
+        label="initial value for dynamic rate"
+        initialValue={0.00001}
+        required
+      >
         <Input type="number" />
       </Form.Item>
 
@@ -287,7 +292,7 @@ export const MangoAddPerpMarketForm = ({
 
       <Form.Item
         name="targetPeriodLength"
-        label="Target period length"
+        label="Target period length in seconds"
         initialValue={3600}
         required
       >
