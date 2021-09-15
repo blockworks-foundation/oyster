@@ -11,7 +11,6 @@ import { PublicKey } from '@solana/web3.js';
 import {
   Config,
   I80F48,
-  makeAddOracleInstruction,
   makeChangePerpMarketParamsInstruction,
 } from '@blockworks-foundation/mango-client';
 import BN from 'bn.js';
