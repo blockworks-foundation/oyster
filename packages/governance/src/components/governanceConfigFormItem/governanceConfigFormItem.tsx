@@ -58,7 +58,7 @@ export function getGovernanceConfig(values: GovernanceConfigValues) {
   });
 }
 
-function parseMinTokensToCreateProposal(
+export function parseMinTokensToCreateProposal(
   value: string | number,
   mintDecimals: number,
 ) {
@@ -98,6 +98,10 @@ export function GovernanceConfigFormItem({
 
   // If the supply is small and 1% is below the minimum mint amount then coerce to the minimum value
   let minTokenStep = Math.max(mintSupply1Percent, minTokenAmount);
+
+  if (maxTokenAmount === 0) {
+    maxTokenAmount = 1;
+  }
 
   let minTokensToCreateProposal = minTokenStep;
 
@@ -177,7 +181,7 @@ export function GovernanceConfigFormItem({
         rules={[{ required: true }]}
         initialValue={getDaysFromTimestamp(governanceConfig.maxVotingTime)}
       >
-        <InputNumber min={1} />
+        <InputNumber min={0.01} />
       </Form.Item>
       <Form.Item
         name={configNameOf('voteThresholdPercentage')}

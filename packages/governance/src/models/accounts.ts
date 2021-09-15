@@ -125,37 +125,43 @@ export class MintMaxVoteWeightSource {
 
 export class RealmConfigArgs {
   useCouncilMint: boolean;
-  useCustodian: boolean;
+
   communityMintMaxVoteWeightSource: MintMaxVoteWeightSource;
+  minCommunityTokensToCreateGovernance: BN;
 
   constructor(args: {
     useCouncilMint: boolean;
-    useCustodian: boolean;
+
     communityMintMaxVoteWeightSource: MintMaxVoteWeightSource;
+    minCommunityTokensToCreateGovernance: BN;
   }) {
     this.useCouncilMint = !!args.useCouncilMint;
-    this.useCustodian = !!args.useCustodian;
+
     this.communityMintMaxVoteWeightSource =
       args.communityMintMaxVoteWeightSource;
+
+    this.minCommunityTokensToCreateGovernance =
+      args.minCommunityTokensToCreateGovernance;
   }
 }
 
 export class RealmConfig {
   councilMint: PublicKey | undefined;
   communityMintMaxVoteWeightSource: MintMaxVoteWeightSource;
-  custodian: PublicKey | undefined;
+  minCommunityTokensToCreateGovernance: BN;
   reserved: Uint8Array;
 
   constructor(args: {
     councilMint: PublicKey | undefined;
     communityMintMaxVoteWeightSource: MintMaxVoteWeightSource;
-    custodian: PublicKey | undefined;
+    minCommunityTokensToCreateGovernance: BN;
     reserved: Uint8Array;
   }) {
     this.councilMint = args.councilMint;
     this.communityMintMaxVoteWeightSource =
       args.communityMintMaxVoteWeightSource;
-    this.custodian = args.custodian;
+    this.minCommunityTokensToCreateGovernance =
+      args.minCommunityTokensToCreateGovernance;
     this.reserved = args.reserved;
   }
 }
@@ -292,6 +298,8 @@ export class TokenOwnerRecord {
 
   totalVotesCount: number;
 
+  outstandingProposalCount: number;
+
   reserved: Uint8Array;
 
   governanceDelegate?: PublicKey;
@@ -303,6 +311,7 @@ export class TokenOwnerRecord {
     governingTokenDepositAmount: BN;
     unrelinquishedVotesCount: number;
     totalVotesCount: number;
+    outstandingProposalCount: number;
     reserved: Uint8Array;
   }) {
     this.realm = args.realm;
@@ -311,6 +320,7 @@ export class TokenOwnerRecord {
     this.governingTokenDepositAmount = args.governingTokenDepositAmount;
     this.unrelinquishedVotesCount = args.unrelinquishedVotesCount;
     this.totalVotesCount = args.totalVotesCount;
+    this.outstandingProposalCount = args.outstandingProposalCount;
     this.reserved = args.reserved;
   }
 }
@@ -587,6 +597,23 @@ export class VoteRecord {
     this.isRelinquished = !!args.isRelinquished;
     this.voteWeight = args.voteWeight;
   }
+}
+
+export async function getVoteRecordAddress(
+  programId: PublicKey,
+  proposal: PublicKey,
+  tokenOwnerRecord: PublicKey,
+) {
+  const [voteRecordAddress] = await PublicKey.findProgramAddress(
+    [
+      Buffer.from(GOVERNANCE_PROGRAM_SEED),
+      proposal.toBuffer(),
+      tokenOwnerRecord.toBuffer(),
+    ],
+    programId,
+  );
+
+  return voteRecordAddress;
 }
 
 export class AccountMetaData {

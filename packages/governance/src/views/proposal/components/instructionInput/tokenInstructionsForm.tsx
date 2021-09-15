@@ -7,6 +7,8 @@ import React, { useState } from 'react';
 import { formDefaults } from '../../../../tools/forms';
 
 import { InstructionSelector, InstructionType } from './instructionSelector';
+import { SplTokenSaleForm } from './splTokenSaleForm';
+import { SplTokenSaleTransferForm } from './splTokenSaleTransferForm';
 import { SplTokenTransferForm } from './splTokenTransferForm';
 import {
   getGovernanceInstructions,
@@ -30,6 +32,8 @@ export const TokenInstructionsForm = ({
 
   let instructions = [
     InstructionType.SplTokenTransfer,
+    InstructionType.SplTokenSale,
+    InstructionType.SplTokenSaleTransfer,
     ...getGovernanceInstructions(realm, governance),
   ];
 
@@ -45,6 +49,20 @@ export const TokenInstructionsForm = ({
           governance={governance}
           onCreateInstruction={onCreateInstruction}
         ></SplTokenTransferForm>
+      )}
+      {instruction === InstructionType.SplTokenSale && (
+        <SplTokenSaleForm
+          form={form}
+          governance={governance}
+          onCreateInstruction={onCreateInstruction}
+        ></SplTokenSaleForm>
+      )}
+      {instruction === InstructionType.SplTokenSaleTransfer && (
+        <SplTokenSaleTransferForm
+          form={form}
+          governance={governance}
+          onCreateInstruction={onCreateInstruction}
+        ></SplTokenSaleTransferForm>
       )}
 
       <GovernanceInstructionForm
