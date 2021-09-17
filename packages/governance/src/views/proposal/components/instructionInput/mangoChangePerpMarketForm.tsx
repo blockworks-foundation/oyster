@@ -56,7 +56,7 @@ export const MangoChangePerpMarketForm = ({
       I80F48.fromNumberOrUndef(rate),
       I80F48.fromNumberOrUndef(maxDepthBps),
       undefined,
-      new BN(mngoPerPeriod),
+      new BN(Math.round(mngoPerPeriod * Math.pow(10, 6))),
     );
 
     onCreateInstruction(instruction);
