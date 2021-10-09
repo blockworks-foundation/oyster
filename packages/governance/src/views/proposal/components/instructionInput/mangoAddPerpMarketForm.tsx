@@ -68,6 +68,7 @@ export const MangoAddPerpMarketForm = ({
     quoteLotSize: number;
     rate: number;
     maxDepthBps: number;
+    exp: number;
     maxNumEvents: number;
     targetPeriodLength: number;
     mngoPerPeriod: number;
@@ -179,6 +180,7 @@ export const MangoAddPerpMarketForm = ({
       I80F48.fromNumber(maxDepthBps),
       new BN(targetPeriodLength),
       new BN(mngoPerPeriod * Math.pow(10, mngoToken.decimals)),
+      new BN(exp),
     );
 
     onCreateInstruction(instruction);
@@ -285,6 +287,15 @@ export const MangoAddPerpMarketForm = ({
         name="maxDepthBps"
         label="max depth bps"
         initialValue={200}
+        required
+      >
+        <Input type="number" />
+      </Form.Item>
+
+      <Form.Item
+        name="exp"
+        label="order book depth weight exponent"
+        initialValue={4}
         required
       >
         <Input type="number" />

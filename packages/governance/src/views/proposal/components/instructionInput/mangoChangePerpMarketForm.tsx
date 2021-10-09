@@ -57,6 +57,7 @@ export const MangoChangePerpMarketForm = ({
       I80F48.fromNumberOrUndef(maxDepthBps),
       undefined,
       new BN(Math.round(mngoPerPeriod * Math.pow(10, 6))),
+      new BN(exp),
     );
 
     onCreateInstruction(instruction);
@@ -96,6 +97,15 @@ export const MangoChangePerpMarketForm = ({
         name="maxDepthBps"
         label="maximum incentivized order book depth"
         initialValue={100}
+        required
+      >
+        <Input type="number" />
+      </Form.Item>
+
+      <Form.Item
+        name="exp"
+        label="order book depth weight exponent"
+        initialValue={4}
         required
       >
         <Input type="number" />
