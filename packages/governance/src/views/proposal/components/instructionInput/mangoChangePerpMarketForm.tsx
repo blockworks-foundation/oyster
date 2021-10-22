@@ -31,6 +31,11 @@ export const MangoChangePerpMarketForm = ({
     maxDepthBps,
     exp,
     mngoPerPeriod,
+    maintLeverage,
+    initLeverage,
+    makerFee,
+    takerFee,
+    liquidationFee,
   }: {
     mangoGroupId: string;
     perpMarketId: string;
@@ -38,6 +43,11 @@ export const MangoChangePerpMarketForm = ({
     maxDepthBps: number;
     exp: number;
     mngoPerPeriod: number;
+    maintLeverage: number;
+    initLeverage: number;
+    makerFee: number;
+    takerFee: number;
+    liquidationFee: number;
   }) => {
     const mangoGroup = new PublicKey(mangoGroupId);
     const perpMarket = new PublicKey(perpMarketId);
@@ -50,11 +60,11 @@ export const MangoChangePerpMarketForm = ({
       mangoGroup,
       perpMarket,
       governance.pubkey,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
+      I80F48.fromNumberOrUndef(maintLeverage),
+      I80F48.fromNumberOrUndef(initLeverage),
+      I80F48.fromNumberOrUndef(liquidationFee),
+      I80F48.fromNumberOrUndef(makerFee),
+      I80F48.fromNumberOrUndef(takerFee),
       I80F48.fromNumberOrUndef(rate),
       I80F48.fromNumberOrUndef(maxDepthBps),
       undefined,
@@ -116,6 +126,41 @@ export const MangoChangePerpMarketForm = ({
       <Form.Item
         name="mngoPerPeriod"
         label="MNGO per period"
+        initialValue={0}
+        required
+      >
+        <Input type="number" />
+      </Form.Item>
+
+      <Form.Item name="makerFee" label="Maker fee" initialValue={0} required>
+        <Input type="number" />
+      </Form.Item>
+
+      <Form.Item name="takerFee" label="Taker fee" initialValue={0} required>
+        <Input type="number" />
+      </Form.Item>
+
+      <Form.Item
+        name="maintLeverage"
+        label="Maint leverage"
+        initialValue={0}
+        required
+      >
+        <Input type="number" />
+      </Form.Item>
+
+      <Form.Item
+        name="initLeverage"
+        label="Init leverage"
+        initialValue={0}
+        required
+      >
+        <Input type="number" />
+      </Form.Item>
+
+      <Form.Item
+        name="liquidationFee"
+        label="Liquidation fee"
         initialValue={0}
         required
       >
