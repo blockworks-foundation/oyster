@@ -8,7 +8,7 @@ import { TransactionInstruction } from '@solana/web3.js';
 import { RealmConfigForm } from './realmConfigForm';
 import { MangoAddSpotMarketForm } from './mangoAddSpotMarketForm';
 import { MangoAddOracleForm } from './mangoAddOracleForm';
-import { MangoAddPerpMarketForm } from './mangoAddPerpMarketForm';
+import { MangoCreatePerpMarketForm } from './mangoCreatePerpMarketForm';
 import { MangoChangePerpMarketForm } from './mangoChangePerpMarketForm';
 
 export function getGovernanceInstructions(
@@ -30,7 +30,7 @@ export function getGovernanceInstructions(
   ) {
     instructions.push(InstructionType.MangoAddOracle);
     instructions.push(InstructionType.MangoAddSpotMarket);
-    instructions.push(InstructionType.MangoAddPerpMarket);
+    instructions.push(InstructionType.MangoCreatePerpMarket);
     instructions.push(InstructionType.MangoChangePerpMarket);
   }
 
@@ -81,12 +81,12 @@ export function GovernanceInstructionForm({
           onCreateInstruction={onCreateInstruction}
         ></MangoAddSpotMarketForm>
       )}
-      {instruction === InstructionType.MangoAddPerpMarket && (
-        <MangoAddPerpMarketForm
+      {instruction === InstructionType.MangoCreatePerpMarket && (
+        <MangoCreatePerpMarketForm
           form={form}
           governance={governance}
           onCreateInstruction={onCreateInstruction}
-        ></MangoAddPerpMarketForm>
+        ></MangoCreatePerpMarketForm>
       )}
       {instruction === InstructionType.MangoChangePerpMarket && (
         <MangoChangePerpMarketForm

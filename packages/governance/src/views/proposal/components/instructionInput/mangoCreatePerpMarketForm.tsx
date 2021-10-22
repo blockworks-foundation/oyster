@@ -1,13 +1,8 @@
 import {
-  BookSideLayout,
   Config,
-  createAccountInstruction,
   I80F48,
-  makeAddPerpMarketInstruction,
+  makeCreatePerpMarketInstruction,
   MangoClient,
-  PerpEventLayout,
-  PerpEventQueueHeaderLayout,
-  PerpMarketLayout,
 } from '@blockworks-foundation/mango-client';
 import {
   ExplorerLink,
@@ -15,7 +10,7 @@ import {
   useConnection,
   useWallet,
 } from '@oyster/common';
-import * as common from '@project-serum/common';
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import {
   Account,
   PublicKey,
@@ -29,7 +24,7 @@ import { AccountFormItem } from '../../../../components/AccountFormItem/accountF
 import { Governance } from '../../../../models/accounts';
 import { formDefaults } from '../../../../tools/forms';
 
-export const MangoAddPerpMarketForm = ({
+export const MangoCreatePerpMarketForm = ({
   form,
   governance,
   onCreateInstruction,
@@ -57,6 +52,7 @@ export const MangoAddPerpMarketForm = ({
     maxNumEvents,
     targetPeriodLength,
     mngoPerPeriod,
+    version,
   }: {
     mangoGroupId: string;
     oracleId: string;
@@ -73,10 +69,13 @@ export const MangoAddPerpMarketForm = ({
     maxNumEvents: number;
     targetPeriodLength: number;
     mngoPerPeriod: number;
+    version: number;
   }) => {
     const groupConfig = Config.ids().groups.find(c =>
       c.publicKey.equals(new PublicKey(mangoGroupId)),
     )!;
+
+    const oraclePk = new PublicKey(oracleId);
 
     const mangoGroup = await new MangoClient(
       connection,
@@ -86,90 +85,58 @@ export const MangoAddPerpMarketForm = ({
     const mngoToken = groupConfig.tokens.filter(token => {
       return token.symbol === 'MNGO';
     })[0];
+    const mngoMintPk = mngoToken.mintKey;
 
-    const provider = new common.Provider(
-      connection,
-      { ...wallet!, publicKey: wallet!.publicKey! },
-      common.Provider.defaultOptions(),
+    const [perpMarketPk] = await PublicKey.findProgramAddress(
+      [
+        mangoGroup.publicKey.toBytes(),
+        new Buffer('PerpMarket', 'utf-8'),
+        oraclePk.toBytes(),
+      ],
+      groupConfig.mangoProgramId,
     );
 
+    const [bidsPk] = await PublicKey.findProgramAddress(
+      [perpMarketPk.toBytes(), new Buffer('Bids', 'utf-8')],
+      groupConfig.mangoProgramId,
+    );
+    const [asksPk] = await PublicKey.findProgramAddress(
+      [perpMarketPk.toBytes(), new Buffer('Asks', 'utf-8')],
+      groupConfig.mangoProgramId,
+    );
+    const [eventQueuePk] = await PublicKey.findProgramAddress(
+      [perpMarketPk.toBytes(), new Buffer('EventQueue', 'utf-8')],
+      groupConfig.mangoProgramId,
+    );
+    const [mngoVaultPk] = await PublicKey.findProgramAddress(
+      [
+        perpMarketPk.toBytes(),
+        TOKEN_PROGRAM_ID.toBytes(),
+        mngoMintPk.toBytes(),
+      ],
+      groupConfig.mangoProgramId,
+    );
     const tx = new Transaction();
-    const addToTx = async (instructions: Promise<TransactionInstruction[]>) => {
-      for (let ins of await instructions) {
-        tx.add(ins);
-      }
-    };
-
-    const makePerpMarketAccountInstruction = await createAccountInstruction(
-      connection,
-      provider.wallet.publicKey,
-      PerpMarketLayout.span,
-      groupConfig.mangoProgramId,
-    );
-    tx.add(makePerpMarketAccountInstruction.instruction);
-
-    const makeEventQueueAccountInstruction = await createAccountInstruction(
-      connection,
-      provider.wallet.publicKey,
-      PerpEventQueueHeaderLayout.span + maxNumEvents * PerpEventLayout.span,
-      groupConfig.mangoProgramId,
-    );
-    tx.add(makeEventQueueAccountInstruction.instruction);
-
-    const makeBidAccountInstruction = await createAccountInstruction(
-      connection,
-      provider.wallet.publicKey,
-      BookSideLayout.span,
-      groupConfig.mangoProgramId,
-    );
-    tx.add(makeBidAccountInstruction.instruction);
-
-    const makeAskAccountInstruction = await createAccountInstruction(
-      connection,
-      provider.wallet.publicKey,
-      BookSideLayout.span,
-      groupConfig.mangoProgramId,
-    );
-    tx.add(makeAskAccountInstruction.instruction);
-
-    const mngoVaultAccount = new Account();
-    await addToTx(
-      common.createTokenAccountInstrs(
-        provider,
-        mngoVaultAccount.publicKey,
-        new PublicKey(mngoToken.mintKey),
-        mangoGroup.signerKey,
-      ),
-    );
 
     tx.recentBlockhash = (await connection.getRecentBlockhash('max')).blockhash;
 
-    const signers = [
-      makePerpMarketAccountInstruction.account,
-      makeEventQueueAccountInstruction.account,
-      makeBidAccountInstruction.account,
-      makeAskAccountInstruction.account,
-      mngoVaultAccount,
-    ];
-    tx.setSigners(wallet!.publicKey!, ...signers.map(s => s.publicKey));
-    if (signers.length > 0) {
-      tx.partialSign(...signers);
-    }
     const signed = await wallet?.signTransaction(tx);
     const txid = await connection.sendRawTransaction(signed!.serialize());
 
-    console.log('created accounts', txid);
+    console.log('create perp mkt txid: ', txid);
 
-    const instruction = await makeAddPerpMarketInstruction(
+    const instruction = await makeCreatePerpMarketInstruction(
       groupConfig.mangoProgramId,
       mangoGroup.publicKey,
-      new PublicKey(oracleId),
-      makePerpMarketAccountInstruction.account.publicKey,
-      makeEventQueueAccountInstruction.account.publicKey,
-      makeBidAccountInstruction.account.publicKey,
-      makeAskAccountInstruction.account.publicKey,
-      mngoVaultAccount.publicKey,
+      oraclePk,
+      perpMarketPk,
+      eventQueuePk,
+      bidsPk,
+      asksPk,
+      mngoMintPk,
+      mngoVaultPk,
       governance.pubkey,
+      mangoGroup.signerKey,
       I80F48.fromNumber(maintLeverage),
       I80F48.fromNumber(initLeverage),
       I80F48.fromNumber(liquidationFee),
@@ -177,11 +144,13 @@ export const MangoAddPerpMarketForm = ({
       I80F48.fromNumber(takerFee),
       new BN(baseLotSize),
       new BN(quoteLotSize),
+      new BN(maxNumEvents),
       I80F48.fromNumber(rate),
       I80F48.fromNumber(maxDepthBps),
       new BN(targetPeriodLength),
-      new BN(mngoPerPeriod * Math.pow(10, mngoToken.decimals)),
+      new BN(mngoPerPeriod),
       new BN(exp),
+      new BN(version),
     );
 
     onCreateInstruction(instruction);
@@ -317,6 +286,9 @@ export const MangoAddPerpMarketForm = ({
         initialValue={0}
         required
       >
+        <Input type="number" />
+      </Form.Item>
+      <Form.Item name="version" label="Version" initialValue={0} required>
         <Input type="number" />
       </Form.Item>
     </Form>

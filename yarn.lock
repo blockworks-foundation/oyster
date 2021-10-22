@@ -1255,10 +1255,10 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
-"@blockworks-foundation/mango-client@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-3.1.0.tgz#cf27c2e660b8431f3f89d7a482171ac291188a23"
-  integrity sha512-V3tSsw7Lt9ZHwP6VAhC0zYiXcogUuDe6Z2RjO0ldz5v/QdXCf+ymg8GvwMZ6D1kAX6iiRlPPZrwL5VTK/teB0g==
+"@blockworks-foundation/mango-client@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@blockworks-foundation/mango-client/-/mango-client-3.2.0.tgz#aeb53def4b5549bdf6de020cb3abc43b97acedc7"
+  integrity sha512-jORykHWirT/fVbq273rv1QC87rtX+VNlSydOfTXR9pVgb317Exz8u0Yc9nLu/3/3SyY9zTXQTD6kHK9Vx8Ovqg==
   dependencies:
     "@project-serum/anchor" "^0.16.2"
     "@project-serum/serum" "0.13.55"
