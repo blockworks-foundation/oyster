@@ -68,8 +68,10 @@ export const MangoChangePerpMarketForm = ({
       I80F48.fromNumberOrUndef(rate),
       I80F48.fromNumberOrUndef(maxDepthBps),
       undefined,
-      new BN(Math.round(mngoPerPeriod * Math.pow(10, 6))),
-      new BN(exp),
+      mngoPerPeriod
+        ? new BN(Math.round(mngoPerPeriod * Math.pow(10, 6)))
+        : undefined,
+      exp ? new BN(exp) : undefined,
     );
 
     onCreateInstruction(instruction);
@@ -96,59 +98,42 @@ export const MangoChangePerpMarketForm = ({
         required
       ></AccountFormItem>
 
-      <Form.Item
-        name="rate"
-        label="initial value for dynamic rate"
-        initialValue={0.00001}
-        required
-      >
-        <Input type="number" />
+      <Form.Item name="rate" label="initial value for dynamic rate">
+        <Input type="number" placeholder="0.00001" />
       </Form.Item>
 
       <Form.Item
         name="maxDepthBps"
         label="maximum incentivized order book depth"
-        initialValue={100}
-        required
       >
+        <Input type="number" placeholder="100" />
+      </Form.Item>
+
+      <Form.Item name="exp" label="order book depth weight exponent">
         <Input type="number" />
       </Form.Item>
 
-      <Form.Item
-        name="exp"
-        label="order book depth weight exponent"
-        initialValue={4}
-        required
-      >
+      <Form.Item name="mngoPerPeriod" label="MNGO per period">
         <Input type="number" />
       </Form.Item>
 
-      <Form.Item
-        name="mngoPerPeriod"
-        label="MNGO per period"
-        initialValue={0}
-        required
-      >
+      <Form.Item name="makerFee" label="Maker fee">
         <Input type="number" />
       </Form.Item>
 
-      <Form.Item name="makerFee" label="Maker fee" required>
+      <Form.Item name="takerFee" label="Taker fee">
         <Input type="number" />
       </Form.Item>
 
-      <Form.Item name="takerFee" label="Taker fee" required>
+      <Form.Item name="maintLeverage" label="Maint leverage">
         <Input type="number" />
       </Form.Item>
 
-      <Form.Item name="maintLeverage" label="Maint leverage" required>
+      <Form.Item name="initLeverage" label="Init leverage">
         <Input type="number" />
       </Form.Item>
 
-      <Form.Item name="initLeverage" label="Init leverage" required>
-        <Input type="number" />
-      </Form.Item>
-
-      <Form.Item name="liquidationFee" label="Liquidation fee" required>
+      <Form.Item name="liquidationFee" label="Liquidation fee">
         <Input type="number" />
       </Form.Item>
     </Form>
