@@ -132,38 +132,23 @@ export const MangoChangePerpMarketForm = ({
         <Input type="number" />
       </Form.Item>
 
-      <Form.Item name="makerFee" label="Maker fee" initialValue={0} required>
+      <Form.Item name="makerFee" label="Maker fee" required>
         <Input type="number" />
       </Form.Item>
 
-      <Form.Item name="takerFee" label="Taker fee" initialValue={0} required>
+      <Form.Item name="takerFee" label="Taker fee" required>
         <Input type="number" />
       </Form.Item>
 
-      <Form.Item
-        name="maintLeverage"
-        label="Maint leverage"
-        initialValue={0}
-        required
-      >
+      <Form.Item name="maintLeverage" label="Maint leverage" required>
         <Input type="number" />
       </Form.Item>
 
-      <Form.Item
-        name="initLeverage"
-        label="Init leverage"
-        initialValue={0}
-        required
-      >
+      <Form.Item name="initLeverage" label="Init leverage" required>
         <Input type="number" />
       </Form.Item>
 
-      <Form.Item
-        name="liquidationFee"
-        label="Liquidation fee"
-        initialValue={0}
-        required
-      >
+      <Form.Item name="liquidationFee" label="Liquidation fee" required>
         <Input type="number" />
       </Form.Item>
     </Form>
