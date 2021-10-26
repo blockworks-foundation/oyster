@@ -52,6 +52,7 @@ export const MangoCreatePerpMarketForm = ({
     targetPeriodLength,
     mngoPerPeriod,
     version,
+    lmSizeShift,
   }: {
     mangoGroupId: string;
     oracleId: string;
@@ -69,6 +70,7 @@ export const MangoCreatePerpMarketForm = ({
     targetPeriodLength: number;
     mngoPerPeriod: number;
     version: number;
+    lmSizeShift: number;
   }) => {
     const groupConfig = Config.ids().groups.find(c =>
       c.publicKey.equals(new PublicKey(mangoGroupId)),
@@ -150,6 +152,7 @@ export const MangoCreatePerpMarketForm = ({
       new BN(mngoPerPeriod),
       new BN(exp),
       new BN(version),
+      new BN(lmSizeShift)
     );
 
     onCreateInstruction(instruction);
@@ -288,6 +291,9 @@ export const MangoCreatePerpMarketForm = ({
         <Input type="number" />
       </Form.Item>
       <Form.Item name="version" label="Version" initialValue={0} required>
+        <Input type="number" />
+      </Form.Item>
+      <Form.Item name="lmSizeShift" label="x such that maxSizeDepth / 2 ^ x is between 1 and 100" initialValue={0}>
         <Input type="number" />
       </Form.Item>
     </Form>
