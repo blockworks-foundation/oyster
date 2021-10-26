@@ -117,14 +117,6 @@ export const MangoCreatePerpMarketForm = ({
       ],
       groupConfig.mangoProgramId,
     );
-    const tx = new Transaction();
-
-    tx.recentBlockhash = (await connection.getRecentBlockhash('max')).blockhash;
-
-    const signed = await wallet?.signTransaction(tx);
-    const txid = await connection.sendRawTransaction(signed!.serialize());
-
-    console.log('create perp mkt txid: ', txid);
 
     const instruction = await makeCreatePerpMarketInstruction(
       groupConfig.mangoProgramId,
@@ -152,7 +144,7 @@ export const MangoCreatePerpMarketForm = ({
       new BN(mngoPerPeriod),
       new BN(exp),
       new BN(version),
-      new BN(lmSizeShift)
+      new BN(lmSizeShift),
     );
 
     onCreateInstruction(instruction);
@@ -293,7 +285,11 @@ export const MangoCreatePerpMarketForm = ({
       <Form.Item name="version" label="Version" initialValue={0} required>
         <Input type="number" />
       </Form.Item>
-      <Form.Item name="lmSizeShift" label="x such that maxSizeDepth / 2 ^ x is between 1 and 100" initialValue={0}>
+      <Form.Item
+        name="lmSizeShift"
+        label="x such that maxSizeDepth / 2 ^ x is between 1 and 100"
+        initialValue={0}
+      >
         <Input type="number" />
       </Form.Item>
     </Form>
