@@ -1,8 +1,12 @@
 import {
+  BookSideLayout,
   Config,
+  createAccountInstruction,
   I80F48,
   makeCreatePerpMarketInstruction,
   MangoClient,
+  PerpEventLayout,
+  PerpEventQueueHeaderLayout,
 } from '@blockworks-foundation/mango-client';
 import {
   ExplorerLink,
@@ -22,6 +26,7 @@ import React from 'react';
 import { AccountFormItem } from '../../../../components/AccountFormItem/accountFormItem';
 import { Governance } from '../../../../models/accounts';
 import { formDefaults } from '../../../../tools/forms';
+import * as common from '@project-serum/common';
 
 export const MangoCreatePerpMarketForm = ({
   form,
@@ -88,6 +93,49 @@ export const MangoCreatePerpMarketForm = ({
     })[0];
     const mngoMintPk = mngoToken.mintKey;
 
+    const provider = new common.Provider(
+      connection,
+      { ...wallet!, publicKey: wallet!.publicKey! },
+      common.Provider.defaultOptions(),
+    );
+    const tx = new Transaction();
+
+    const makeEventQueueAccountInstruction = await createAccountInstruction(
+      connection,
+      provider.wallet.publicKey,
+      PerpEventQueueHeaderLayout.span + maxNumEvents * PerpEventLayout.span,
+      groupConfig.mangoProgramId,
+    );
+    tx.add(makeEventQueueAccountInstruction.instruction);
+
+    const makeBidAccountInstruction = await createAccountInstruction(
+      connection,
+      provider.wallet.publicKey,
+      BookSideLayout.span,
+      groupConfig.mangoProgramId,
+    );
+    tx.add(makeBidAccountInstruction.instruction);
+
+    const makeAskAccountInstruction = await createAccountInstruction(
+      connection,
+      provider.wallet.publicKey,
+      BookSideLayout.span,
+      groupConfig.mangoProgramId,
+    );
+    tx.add(makeAskAccountInstruction.instruction);
+
+    tx.recentBlockhash = (await connection.getRecentBlockhash('max')).blockhash;
+    const signers = [
+      makeEventQueueAccountInstruction.account,
+      makeBidAccountInstruction.account,
+      makeAskAccountInstruction.account,
+    ];
+    tx.feePayer = wallet!.publicKey!;
+    tx.partialSign(...signers);
+    const signed = await wallet?.signTransaction(tx);
+    const txid = await connection.sendRawTransaction(signed!.serialize());
+    console.log('created accounts', txid);
+
     const [perpMarketPk] = await PublicKey.findProgramAddress(
       [
         mangoGroup.publicKey.toBytes(),
@@ -97,18 +145,6 @@ export const MangoCreatePerpMarketForm = ({
       groupConfig.mangoProgramId,
     );
 
-    const [bidsPk] = await PublicKey.findProgramAddress(
-      [perpMarketPk.toBytes(), new Buffer('Bids', 'utf-8')],
-      groupConfig.mangoProgramId,
-    );
-    const [asksPk] = await PublicKey.findProgramAddress(
-      [perpMarketPk.toBytes(), new Buffer('Asks', 'utf-8')],
-      groupConfig.mangoProgramId,
-    );
-    const [eventQueuePk] = await PublicKey.findProgramAddress(
-      [perpMarketPk.toBytes(), new Buffer('EventQueue', 'utf-8')],
-      groupConfig.mangoProgramId,
-    );
     const [mngoVaultPk] = await PublicKey.findProgramAddress(
       [
         perpMarketPk.toBytes(),
@@ -123,9 +159,9 @@ export const MangoCreatePerpMarketForm = ({
       mangoGroup.publicKey,
       oraclePk,
       perpMarketPk,
-      eventQueuePk,
-      bidsPk,
-      asksPk,
+      makeEventQueueAccountInstruction.account.publicKey,
+      makeBidAccountInstruction.account.publicKey,
+      makeAskAccountInstruction.account.publicKey,
       mngoMintPk,
       mngoVaultPk,
       governance.pubkey,
@@ -137,11 +173,10 @@ export const MangoCreatePerpMarketForm = ({
       I80F48.fromNumber(takerFee),
       new BN(baseLotSize),
       new BN(quoteLotSize),
-      new BN(maxNumEvents),
       I80F48.fromNumber(rate),
       I80F48.fromNumber(maxDepthBps),
       new BN(targetPeriodLength),
-      new BN(mngoPerPeriod),
+      new BN(mngoPerPeriod * Math.pow(10, mngoToken.decimals)),
       new BN(exp),
       new BN(version),
       new BN(lmSizeShift),
