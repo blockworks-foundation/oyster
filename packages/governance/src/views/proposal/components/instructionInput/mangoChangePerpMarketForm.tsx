@@ -10,8 +10,8 @@ import { AccountFormItem } from '../../../../components/AccountFormItem/accountF
 import { PublicKey } from '@solana/web3.js';
 import {
   Config,
-  I80F48, makeChangePerpMarketParams2Instruction,
-  makeChangePerpMarketParamsInstruction,
+  I80F48,
+  makeChangePerpMarketParams2Instruction,
 } from '@blockworks-foundation/mango-client';
 import BN from 'bn.js';
 
@@ -76,8 +76,8 @@ export const MangoChangePerpMarketForm = ({
         ? new BN(Math.round(mngoPerPeriod * Math.pow(10, 6)))
         : undefined,
       exp ? new BN(exp) : undefined,
-      (version !== undefined) ? new BN(version) : undefined,
-      (lmSizeShift !== undefined) ? new BN(lmSizeShift) : undefined,
+      version !== undefined ? new BN(version) : undefined,
+      lmSizeShift !== undefined ? new BN(lmSizeShift) : undefined,
     );
 
     onCreateInstruction(instruction);
@@ -145,7 +145,10 @@ export const MangoChangePerpMarketForm = ({
       <Form.Item name="version" label="Version">
         <Input type="number" />
       </Form.Item>
-      <Form.Item name="lmSizeShift" label="LM Size Shift: x such that maxSizeDepth / 2 ^ x is between 1 and 100">
+      <Form.Item
+        name="lmSizeShift"
+        label="LM Size Shift: x such that maxSizeDepth / 2 ^ x is between 1 and 100"
+      >
         <Input type="number" />
       </Form.Item>
     </Form>
