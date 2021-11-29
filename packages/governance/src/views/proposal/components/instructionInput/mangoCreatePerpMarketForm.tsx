@@ -58,6 +58,7 @@ export const MangoCreatePerpMarketForm = ({
     mngoPerPeriod,
     version,
     lmSizeShift,
+    baseDecimals,
   }: {
     mangoGroupId: string;
     oracleId: string;
@@ -76,6 +77,7 @@ export const MangoCreatePerpMarketForm = ({
     mngoPerPeriod: number;
     version: number;
     lmSizeShift: number;
+    baseDecimals: number;
   }) => {
     const groupConfig = Config.ids().groups.find(c =>
       c.publicKey.equals(new PublicKey(mangoGroupId)),
@@ -180,6 +182,7 @@ export const MangoCreatePerpMarketForm = ({
       new BN(exp),
       new BN(version),
       new BN(lmSizeShift),
+      new BN(baseDecimals),
     );
 
     onCreateInstruction(instruction);
@@ -324,6 +327,13 @@ export const MangoCreatePerpMarketForm = ({
         name="lmSizeShift"
         label="x such that maxSizeDepth / 2 ^ x is between 1 and 100"
         initialValue={0}
+      >
+        <Input type="number" />
+      </Form.Item>
+      <Form.Item
+        name="baseDecimals"
+        label="nr of decimals a spot market would be listed with in case it does not exist yet"
+        initialValue={9}
       >
         <Input type="number" />
       </Form.Item>
