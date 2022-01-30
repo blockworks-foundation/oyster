@@ -14,6 +14,7 @@ export enum InstructionType {
   MangoAddSpotMarket,
   MangoCreatePerpMarket,
   MangoChangePerpMarket,
+  MangoChangeSpotMarket,
 }
 
 const instructionNames = [
@@ -29,6 +30,7 @@ const instructionNames = [
   'mango add spot-market',
   'mango create perp-market',
   'mango change perp-market',
+  'mango change spot-market',
 ];
 
 export function InstructionSelector({

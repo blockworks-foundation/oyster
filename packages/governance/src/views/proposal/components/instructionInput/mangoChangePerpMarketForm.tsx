@@ -12,6 +12,7 @@ import {
   Config,
   I80F48,
   makeChangePerpMarketParams2Instruction,
+  optionalBNFromString,
 } from '@blockworks-foundation/mango-client';
 import BN from 'bn.js';
 
@@ -41,17 +42,17 @@ export const MangoChangePerpMarketForm = ({
   }: {
     mangoGroupId: string;
     perpMarketId: string;
-    rate: number;
-    maxDepthBps: number;
-    exp: number;
-    mngoPerPeriod: number;
-    maintLeverage: number;
-    initLeverage: number;
-    makerFee: number;
-    takerFee: number;
-    liquidationFee: number;
-    version: number;
-    lmSizeShift: number;
+    rate?: string;
+    maxDepthBps?: string;
+    exp?: string;
+    mngoPerPeriod?: string;
+    maintLeverage?: string;
+    initLeverage?: string;
+    makerFee?: string;
+    takerFee?: string;
+    liquidationFee?: string;
+    version?: string;
+    lmSizeShift?: string;
   }) => {
     const mangoGroup = new PublicKey(mangoGroupId);
     const perpMarket = new PublicKey(perpMarketId);
@@ -64,20 +65,22 @@ export const MangoChangePerpMarketForm = ({
       mangoGroup,
       perpMarket,
       governance.pubkey,
-      maintLeverage ? I80F48.fromNumberOrUndef(maintLeverage) : undefined,
-      initLeverage ? I80F48.fromNumberOrUndef(initLeverage) : undefined,
-      liquidationFee ? I80F48.fromNumberOrUndef(liquidationFee) : undefined,
-      makerFee ? I80F48.fromNumberOrUndef(makerFee) : undefined,
-      takerFee ? I80F48.fromNumberOrUndef(takerFee) : undefined,
-      rate ? I80F48.fromNumberOrUndef(rate) : undefined,
-      maxDepthBps ? I80F48.fromNumberOrUndef(maxDepthBps) : undefined,
+      I80F48.fromOptionalString(maintLeverage),
+      I80F48.fromOptionalString(initLeverage),
+      I80F48.fromOptionalString(liquidationFee),
+      I80F48.fromOptionalString(makerFee),
+      I80F48.fromOptionalString(takerFee),
+      I80F48.fromOptionalString(rate),
+      I80F48.fromOptionalString(maxDepthBps),
       undefined,
       mngoPerPeriod
-        ? new BN(Math.round(mngoPerPeriod * Math.pow(10, 6)))
+        ? new BN(
+            Math.round(((mngoPerPeriod as any) as number) * Math.pow(10, 6)),
+          )
         : undefined,
-      exp ? new BN(exp) : undefined,
-      version !== undefined ? new BN(version) : undefined,
-      lmSizeShift !== undefined ? new BN(lmSizeShift) : undefined,
+      optionalBNFromString(exp),
+      optionalBNFromString(version),
+      optionalBNFromString(lmSizeShift),
     );
 
     onCreateInstruction(instruction);

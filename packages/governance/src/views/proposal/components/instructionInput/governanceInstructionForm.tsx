@@ -10,6 +10,7 @@ import { MangoAddSpotMarketForm } from './mangoAddSpotMarketForm';
 import { MangoAddOracleForm } from './mangoAddOracleForm';
 import { MangoCreatePerpMarketForm } from './mangoCreatePerpMarketForm';
 import { MangoChangePerpMarketForm } from './mangoChangePerpMarketForm';
+import { MangoChangeSpotMarketForm } from './mangoChangeSpotMarketForm';
 
 export function getGovernanceInstructions(
   realm: ParsedAccount<Realm>,
@@ -32,6 +33,7 @@ export function getGovernanceInstructions(
     instructions.push(InstructionType.MangoAddSpotMarket);
     instructions.push(InstructionType.MangoCreatePerpMarket);
     instructions.push(InstructionType.MangoChangePerpMarket);
+    instructions.push(InstructionType.MangoChangeSpotMarket);
   }
 
   return instructions;
@@ -94,6 +96,13 @@ export function GovernanceInstructionForm({
           governance={governance}
           onCreateInstruction={onCreateInstruction}
         ></MangoChangePerpMarketForm>
+      )}
+      {instruction === InstructionType.MangoChangeSpotMarket && (
+        <MangoChangeSpotMarketForm
+          form={form}
+          governance={governance}
+          onCreateInstruction={onCreateInstruction}
+        ></MangoChangeSpotMarketForm>
       )}
     </>
   );
