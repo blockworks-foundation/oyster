@@ -162,6 +162,14 @@ export const useVoteRecordsByProposal = (proposal: PublicKey | undefined) => {
   ]);
 };
 
+export const useVoteRecordsByTokenOwner = (
+  tokenOwnerRecord: PublicKey | undefined,
+) => {
+  return useGovernanceAccountsByFilter<VoteRecord>(VoteRecord, [
+    pubkeyFilter(33, tokenOwnerRecord),
+  ]);
+};
+
 export const useTokenOwnerVoteRecord = (
   proposal: PublicKey,
   tokenOwnerRecord: PublicKey | undefined,
